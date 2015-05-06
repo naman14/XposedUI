@@ -11,12 +11,16 @@ import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam;
-import de.robv.android.xposed.callbacks.XC_LayoutInflated;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 public class Main implements IXposedHookZygoteInit, IXposedHookInitPackageResources, IXposedHookLoadPackage  {
 
     private static String MODULE_PATH = null;
+    private static ViewGroup header;
+    private static RelativeLayout quicksettings;
+
+   private static XModuleResources modRes;
+    private static InitPackageResourcesParam mResparam;
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -30,30 +34,28 @@ public class Main implements IXposedHookZygoteInit, IXposedHookInitPackageResour
 
     @Override
     public void handleInitPackageResources(InitPackageResourcesParam resparam) throws Throwable {
-        if (!resparam.packageName.equals("com.android.systemui"))
-            return;
-        final XModuleResources modRes=XModuleResources.createInstance(MODULE_PATH, resparam.res);
-        resparam.res.hookLayout("com.android.systemui", "layout", "qs_panel", new XC_LayoutInflated() {
 
-            @Override
-            public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
-                ViewGroup clock = (ViewGroup) liparam.view.findViewById(
-                        liparam.res.getIdentifier("quick_settings_panel", "id", "com.android.systemui"));
+        mResparam=resparam;
 
-               clock.setBackground(modRes.getDrawable(R.drawable.photo2));
+        modRes=XModuleResources.createInstance(MODULE_PATH, resparam.res);
 
-            }
-        });
-        resparam.res.hookLayout("com.android.systemui", "layout", "status_bar_expanded_header", new XC_LayoutInflated() {
+        HookDrawables.hook();
 
-            @Override
-            public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
-                RelativeLayout clock = (RelativeLayout) liparam.view.findViewById(
-                        liparam.res.getIdentifier("header", "id", "com.android.systemui"));
 
-                clock.setBackground(modRes.getDrawable(R.drawable.ic_header));
 
-            }
-        });
+    }
+
+
+
+    public static XModuleResources getXposedModuleResources() {
+
+        return modRes;
+
+    }
+
+    public static InitPackageResourcesParam getXposedInitPackageResourcesParam() {
+
+        return mResparam;
+
     }
 }

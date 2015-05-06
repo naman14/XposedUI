@@ -26,12 +26,14 @@ public class MainActivity extends ActionBarActivity {
 
     ImageView album;
     Drawable albumart;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         album=(ImageView) findViewById(R.id.album);
+
 
         IntentFilter iF = new IntentFilter();
         iF.addAction("com.android.music.metachanged");
@@ -98,6 +100,8 @@ public class MainActivity extends ActionBarActivity {
 
 
                     album.setImageDrawable(createDrawable(albumArtUri));
+
+
                 }
                 cursor.close();
             }
@@ -109,7 +113,7 @@ public class MainActivity extends ActionBarActivity {
     private Drawable createDrawable(Uri uri){
         try {
             InputStream inputStream = getContentResolver().openInputStream(uri);
-            albumart = Drawable.createFromStream(inputStream, uri.toString() );
+            albumart = Drawable.createFromStream(inputStream, uri.toString());
         } catch (FileNotFoundException e) {
             albumart = getResources().getDrawable(R.drawable.ic_header);
         }
