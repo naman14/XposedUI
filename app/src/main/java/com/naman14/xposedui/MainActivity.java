@@ -1,22 +1,32 @@
 package com.naman14.xposedui;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 
 public class MainActivity extends ActionBarActivity {
 
+
+    ImageView album;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        album=(ImageView) findViewById(R.id.album);
 
         IntentFilter iF = new IntentFilter();
         iF.addAction("com.android.music.metachanged");
@@ -64,8 +74,31 @@ public class MainActivity extends ActionBarActivity {
         public void onReceive(Context context, Intent intent) {
 
             String track = intent.getStringExtra("track");
+            long songId = intent.getLongExtra("id", -1);
+            //get the albumid using media/song id
+            if(songId!=-1) {
+                String selection = MediaStore.Audio.Media._ID + " = "+songId+"";
+
+                Cursor cursor = getContentResolver().query(
+                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, new String[] {
+                                MediaStore.Audio.Media._ID, MediaStore.Audio.Media.ALBUM_ID},
+                        selection, null, null);
+
+                if (cursor.moveToFirst()) {
+                    long albumId = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
+                    Log.d("Album ID : ", "" + albumId);
+
+                    Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
+                    Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, albumId);
+
+                    album.setImageURI(albumArtUri);
+                }
+                cursor.close();
+            }
 
             Toast.makeText(MainActivity.this, track, Toast.LENGTH_SHORT).show();
         }
     };
+
+
 }
