@@ -3,6 +3,8 @@ package com.naman14.xposedui;
 /**
  * Created by naman on 04/05/15.
  */
+import android.app.AndroidAppHelper;
+import android.content.Context;
 import android.content.res.XModuleResources;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
@@ -20,6 +22,8 @@ public class Main implements IXposedHookZygoteInit, IXposedHookInitPackageResour
     private static ClassLoader classLoader;
     public static String SYSTEM_UI_PACKAGE_NAME = "com.android.systemui";
 
+   private static Context context;
+
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
         MODULE_PATH = startupParam.modulePath;
@@ -28,10 +32,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookInitPackageResour
     @Override
     public void handleLoadPackage(LoadPackageParam lpparam) throws Throwable {
 
-        if (lpparam.packageName.equals(SYSTEM_UI_PACKAGE_NAME)) {
+        if (!lpparam.packageName.equals(SYSTEM_UI_PACKAGE_NAME))
+        return;
 
-            classLoader=lpparam.classLoader;
-        }
+         classLoader=lpparam.classLoader;
+         context= AndroidAppHelper.currentApplication().getApplicationContext();
 
 
     }
@@ -62,6 +67,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookInitPackageResour
     }
     public static ClassLoader getClassLoader(){
         return classLoader;
+    }
+
+    public static Context getContext(){
+        return context;
     }
 
 

@@ -1,10 +1,14 @@
 package com.naman14.xposedui;
 
-import android.content.SharedPreferences;
+import android.content.Context;
 import android.content.res.XModuleResources;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
+import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XSharedPreferences;
+import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LayoutInflated;
 
@@ -16,6 +20,9 @@ public class HookDrawables {
 
     public static void hook(){
 
+        Context context=Main.getContext();
+
+       final XSharedPreferences preferences=new XSharedPreferences("com.naman14.xposedui","ALBUM_ART");
 
        XC_InitPackageResources.InitPackageResourcesParam resparam=Main.getXposedInitPackageResourcesParam();
        final XModuleResources modRes=Main.getXposedModuleResources();
@@ -42,4 +49,5 @@ public class HookDrawables {
             }
         });
     }
+
 }
