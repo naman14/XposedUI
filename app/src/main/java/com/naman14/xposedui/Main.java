@@ -3,15 +3,21 @@ package com.naman14.xposedui;
 /**
  * Created by naman on 04/05/15.
  */
-import android.app.AndroidAppHelper;
 import android.content.Context;
 import android.content.res.XModuleResources;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
+import de.robv.android.xposed.XSharedPreferences;
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
+import static de.robv.android.xposed.XposedHelpers.callStaticMethod;
+import static de.robv.android.xposed.XposedHelpers.findClass;
+import static de.robv.android.xposed.XposedHelpers.callMethod;
 
 public class Main implements IXposedHookZygoteInit, IXposedHookInitPackageResources, IXposedHookLoadPackage  {
 
@@ -23,6 +29,8 @@ public class Main implements IXposedHookZygoteInit, IXposedHookInitPackageResour
     public static String SYSTEM_UI_PACKAGE_NAME = "com.android.systemui";
 
    private static Context context;
+    private static Drawable drawable;
+    final XSharedPreferences preferences=new XSharedPreferences("com.naman14.xposedui","ALBUM_ART");
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -36,19 +44,25 @@ public class Main implements IXposedHookZygoteInit, IXposedHookInitPackageResour
         return;
 
          classLoader=lpparam.classLoader;
-         context= AndroidAppHelper.currentApplication().getApplicationContext();
 
+        Object activityThread = callStaticMethod(
+                findClass("android.app.ActivityThread", null), "currentActivityThread");
+         context = (Context) callMethod(activityThread, "getSystemContext");
 
     }
 
     @Override
     public void handleInitPackageResources(InitPackageResourcesParam resparam) throws Throwable {
 
+
+        if (!resparam.packageName.equals(SYSTEM_UI_PACKAGE_NAME))
+        return;
+
         mResparam=resparam;
-
         modRes=XModuleResources.createInstance(MODULE_PATH, resparam.res);
-
-        HookDrawables.hook();
+        if (context!=null)
+        HookDrawables.hook(Utils.createDrawable(context, Uri.parse(preferences.getString("URI",""))));
+        else XposedBridge.log("Context is null");
 
     }
 

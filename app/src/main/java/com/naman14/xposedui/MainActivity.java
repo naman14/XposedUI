@@ -100,7 +100,7 @@ public class MainActivity extends ActionBarActivity {
                     Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, albumId);
 
 
-                    album.setImageDrawable(Utils.createDrawable(MainActivity.this,albumArtUri));
+
                     prefs.putString("URI",albumArtUri.toString());
 
 
