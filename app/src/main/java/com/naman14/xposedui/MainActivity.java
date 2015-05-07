@@ -5,27 +5,25 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-
 
 public class MainActivity extends ActionBarActivity {
 
 
     ImageView album;
-    Drawable albumart;
+    SharedPreferences preferences;
+    SharedPreferences.Editor prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +31,9 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         album=(ImageView) findViewById(R.id.album);
+        preferences=getSharedPreferences("ALBUM_ART",MODE_WORLD_READABLE);
+        prefs=preferences.edit();
+
 
 
         IntentFilter iF = new IntentFilter();
@@ -99,7 +100,9 @@ public class MainActivity extends ActionBarActivity {
                     Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, albumId);
 
 
-                    album.setImageDrawable(createDrawable(albumArtUri));
+                    album.setImageDrawable(Utils.createDrawable(MainActivity.this,albumArtUri));
+                    prefs.putString("URI",albumArtUri.toString());
+
 
 
                 }
@@ -110,15 +113,7 @@ public class MainActivity extends ActionBarActivity {
         }
     };
 
-    private Drawable createDrawable(Uri uri){
-        try {
-            InputStream inputStream = getContentResolver().openInputStream(uri);
-            albumart = Drawable.createFromStream(inputStream, uri.toString());
-        } catch (FileNotFoundException e) {
-            albumart = getResources().getDrawable(R.drawable.ic_header);
-        }
-        return albumart;
-    }
+
 
 
 }

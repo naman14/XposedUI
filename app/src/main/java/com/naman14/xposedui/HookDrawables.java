@@ -1,5 +1,6 @@
 package com.naman14.xposedui;
 
+import android.content.SharedPreferences;
 import android.content.res.XModuleResources;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -13,10 +14,10 @@ import de.robv.android.xposed.callbacks.XC_LayoutInflated;
 public class HookDrawables {
 
 
-
     public static void hook(){
 
-        XC_InitPackageResources.InitPackageResourcesParam resparam=Main.getXposedInitPackageResourcesParam();
+
+       XC_InitPackageResources.InitPackageResourcesParam resparam=Main.getXposedInitPackageResourcesParam();
        final XModuleResources modRes=Main.getXposedModuleResources();
 
         resparam.res.hookLayout("com.android.systemui", "layout", "qs_panel", new XC_LayoutInflated() {
