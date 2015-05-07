@@ -30,7 +30,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookInitPackageResour
 
    private static Context context;
     private static Drawable drawable;
-    final XSharedPreferences preferences=new XSharedPreferences("com.naman14.xposedui","ALBUM_ART");
+   public static final XSharedPreferences preferences=new XSharedPreferences("com.naman14.xposedui","ALBUM_ART");
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -50,6 +50,7 @@ public class Main implements IXposedHookZygoteInit, IXposedHookInitPackageResour
          context = (Context) callMethod(activityThread, "getSystemContext");
 
         XposedUtils.registerMediaReciever(context);
+        XposedUtils.registerXReciever(context);
 
     }
 
@@ -87,6 +88,10 @@ public class Main implements IXposedHookZygoteInit, IXposedHookInitPackageResour
 
     public static Context getContext(){
         return context;
+    }
+
+    public static XSharedPreferences getXSharedPreferences(){
+        return preferences;
     }
 
 

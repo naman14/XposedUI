@@ -76,4 +76,24 @@ public class XposedUtils {
         }
     };
 
+    public static void registerXReciever(Context context){
+
+        IntentFilter intentFilter=new IntentFilter();
+        intentFilter.addAction(Utils.PREFS_CHANGED);
+
+        context.registerReceiver(xReceiver,intentFilter);
+
+    }
+
+    private static BroadcastReceiver xReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            if (intent.getAction().equals(Utils.PREFS_CHANGED)){
+                Main.getXSharedPreferences().makeWorldReadable();
+                Main.getXSharedPreferences().reload();
+            }
+        }
+    };
+
 }

@@ -15,6 +15,8 @@ import de.robv.android.xposed.XposedBridge;
  */
 public class Utils {
 
+
+    public static String PREFS_CHANGED="com.naman14.xposedui.PREFS_CHANGED";
     private static Drawable albumart;
     private static XModuleResources modRes;
 
