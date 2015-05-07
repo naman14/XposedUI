@@ -8,6 +8,8 @@ import android.net.Uri;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import de.robv.android.xposed.XposedBridge;
+
 /**
  * Created by naman on 07/05/15.
  */
@@ -22,9 +24,8 @@ public class Utils {
             InputStream inputStream = context.getContentResolver().openInputStream(uri);
             albumart = Drawable.createFromStream(inputStream, uri.toString());
         } catch (FileNotFoundException e) {
-            albumart = modRes.getDrawable(R.drawable.ic_header);
-        } catch (NullPointerException e){
-            albumart=modRes.getDrawable(R.drawable.photo2);
+            albumart = modRes.getDrawable(R.drawable.photo2);
+            XposedBridge.log("lol2");
         }
         return albumart;
     }

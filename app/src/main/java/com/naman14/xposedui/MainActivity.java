@@ -99,9 +99,8 @@ public class MainActivity extends ActionBarActivity {
                     Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
                     Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, albumId);
 
-
-
                     prefs.putString("URI",albumArtUri.toString());
+                    prefs.commit();
 
 
 
