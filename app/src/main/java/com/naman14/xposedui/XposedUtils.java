@@ -8,33 +8,22 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.ImageView;
 import android.widget.Toast;
 
+/**
+ * Created by naman on 07/05/15.
+ */
+public class XposedUtils {
 
-public class MainActivity extends ActionBarActivity {
+    static SharedPreferences preferences;
+    static SharedPreferences.Editor prefs;
 
+    public static void registerMediaReciever(Context context){
 
-    ImageView album;
-    SharedPreferences preferences;
-    SharedPreferences.Editor prefs;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        album=(ImageView) findViewById(R.id.album);
-        preferences=getSharedPreferences("ALBUM_ART",MODE_WORLD_READABLE);
+        preferences=context.getSharedPreferences("ALBUM_ART",Context.MODE_WORLD_READABLE);
         prefs=preferences.edit();
-
-
 
         IntentFilter iF = new IntentFilter();
         iF.addAction("com.android.music.metachanged");
@@ -50,33 +39,9 @@ public class MainActivity extends ActionBarActivity {
         iF.addAction("com.samsung.sec.android.MusicPlayer.metachanged");
         iF.addAction("com.andrew.apollo.metachanged");
 
-       // registerReceiver(mReceiver, iF);
+        context.registerReceiver(mReceiver, iF);
     }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+    private static BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -87,7 +52,7 @@ public class MainActivity extends ActionBarActivity {
             if(songId!=-1) {
                 String selection = MediaStore.Audio.Media._ID + " = "+songId+"";
 
-                Cursor cursor = getContentResolver().query(
+                Cursor cursor = context.getContentResolver().query(
                         MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, new String[] {
                                 MediaStore.Audio.Media._ID, MediaStore.Audio.Media.ALBUM_ID},
                         selection, null, null);
@@ -99,20 +64,16 @@ public class MainActivity extends ActionBarActivity {
                     Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
                     Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, albumId);
 
-                  //  prefs.putString("URI",albumArtUri.toString());
-                  //  prefs.commit();
-
-
+                    prefs.putString("URI",albumArtUri.toString());
+                    prefs.commit();
+                    HookDrawables.hook(Utils.createDrawable(context, Uri.parse(preferences.getString("URI",""))));
 
                 }
                 cursor.close();
             }
 
-            Toast.makeText(MainActivity.this, track, Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, track, Toast.LENGTH_SHORT).show();
         }
     };
-
-
-
 
 }

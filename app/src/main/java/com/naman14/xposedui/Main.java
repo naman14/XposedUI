@@ -49,6 +49,8 @@ public class Main implements IXposedHookZygoteInit, IXposedHookInitPackageResour
                 findClass("android.app.ActivityThread", null), "currentActivityThread");
          context = (Context) callMethod(activityThread, "getSystemContext");
 
+        XposedUtils.registerMediaReciever(context);
+
     }
 
     @Override
