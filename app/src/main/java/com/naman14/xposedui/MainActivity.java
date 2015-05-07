@@ -14,7 +14,9 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.Toast;
 
 
@@ -25,14 +27,38 @@ public class MainActivity extends ActionBarActivity {
     SharedPreferences preferences;
     SharedPreferences.Editor prefs;
 
+    Switch blur;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         album=(ImageView) findViewById(R.id.album);
+        blur=(Switch) findViewById(R.id.blur);
         preferences=getSharedPreferences("ALBUM_ART",MODE_WORLD_READABLE);
         prefs=preferences.edit();
+
+        blur.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b){
+                    prefs.putBoolean("BLUR",true);
+
+                } else {
+                    prefs.putBoolean("BLUR",false);
+                }
+
+                prefs.commit();
+
+
+              // Dont know why there;s a DeadObjectException here
+              //  Intent intent = new Intent("com.naman14.xposedui.PREFS_CHANGED");
+              //  sendBroadcast(intent);
+
+
+            }
+        });
 
 
 

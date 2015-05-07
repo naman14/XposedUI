@@ -63,8 +63,11 @@ public class Main implements IXposedHookZygoteInit, IXposedHookInitPackageResour
 
         mResparam=resparam;
         modRes=XModuleResources.createInstance(MODULE_PATH, resparam.res);
-        if (context!=null)
-        HookDrawables.hook(Utils.createDrawable(context, Uri.parse(preferences.getString("URI",""))));
+        if (context!=null) {
+            if (!preferences.getBoolean("BLUR",true))
+            HookDrawables.hook(Utils.createDrawable(context, Uri.parse(preferences.getString("URI", ""))));
+            else HookDrawables.hook(Utils.createBlurredImage(Utils.createDrawable(context,Uri.parse(preferences.getString("URI",""))),context));
+        }
         else XposedBridge.log("Context is null");
 
     }
